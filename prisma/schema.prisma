@@ -10,51 +10,72 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  UNKNOWN
+  JOURNALIST
+  BRAND
+  ADMIN
+}
+
 model User {
-  id         Int      @id @default(autoincrement())
-  first_name String
-  last_name  String
-  email      String   @unique
-  password   String
-  token      String
-  created_at DateTime @default(now()) @db.Timestamptz(5)
-  updated_at DateTime @default(now()) @db.Timestamptz(5)
-}
-
-model Brand {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now()) @db.Timestamptz(5)
-  updated_at DateTime @default(now()) @db.Timestamptz(5)
-}
-
-model Journalist {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now()) @db.Timestamptz(5)
-  updated_at DateTime @default(now()) @db.Timestamptz(5)
+  id                 Int       @id @default(autoincrement())
+  first_name         String
+  last_name          String
+  email              String    @unique
+  password           String
+  token              String
+  stripe_customer_id String    @unique
+  created_at         DateTime  @default(now()) @db.Timestamptz(5)
+  updated_at         DateTime  @default(now()) @db.Timestamptz(5)
+  is_verified        DateTime?
+  is_approved        DateTime?
+  role               Role      @default(UNKNOWN)
+  Profile            Profile?
+  Match              Match[]
 }
 
 model Profile {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now()) @db.Timestamptz(5)
-  updated_at DateTime @default(now()) @db.Timestamptz(5)
+  id                     Int           @id @default(autoincrement())
+  affliate_url           String?
+  industries             Industry[]
+  preferred_datetime     DateTime
+  preferred_medium       String?
+  preferred_time         String?
+  preferred_publications Publication[]
+  quarterly_goal         Int
+  stories_per_month      Int
+  years_of_exp           Int
+  user                   User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id                Int           @unique
+  created_at             DateTime      @default(now()) @db.Timestamptz(5)
+  updated_at             DateTime      @default(now()) @db.Timestamptz(5)
 }
 
 model Match {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now()) @db.Timestamptz(5)
-  updated_at DateTime @default(now()) @db.Timestamptz(5)
+  id            Int      @id @default(autoincrement())
+  created_at    DateTime @default(now()) @db.Timestamptz(5)
+  updated_at    DateTime @default(now()) @db.Timestamptz(5)
+  brand_id      Int
+  journalist_id Int
+  users         User[]
 }
 
 model Industry {
   id         Int      @id @default(autoincrement())
+  label      String
   created_at DateTime @default(now()) @db.Timestamptz(5)
   updated_at DateTime @default(now()) @db.Timestamptz(5)
+  Profile    Profile? @relation(fields: [profileId], references: [id])
+  profileId  Int?
 }
 
 model Publication {
   id         Int      @id @default(autoincrement())
+  label      String
   created_at DateTime @default(now()) @db.Timestamptz(5)
   updated_at DateTime @default(now()) @db.Timestamptz(5)
+  Profile    Profile? @relation(fields: [profileId], references: [id])
+  profileId  Int?
 }
 
 model Image {
