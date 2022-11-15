@@ -29,7 +29,8 @@ services:
     environment:
       POSTGRES_USER: username # The PostgreSQL user (useful to connect to the database)
       POSTGRES_PASSWORD: password # The PostgreSQL password (useful to connect to the database)
-      POSTGRES_DB: desksidesdb # The PostgreSQL default database (automatically created at first launch)
+      POSTGRES_DB: desksides-db # The PostgreSQL default database (automatically created at first launch)
+      JWT_SECRET: eyJhbGciOiJIUzI1NiJ9
     volumes:
       - data:/var/lib/postgresql/data/
 volumes:
