@@ -14,7 +14,7 @@ export class AppController {
 
   @Get('/hello')
   async hello() {
-    console.log(process.env.JWT_SECRET);
+    console.log(process.env.JWT_S);
     return 'hello';
   }
 }
