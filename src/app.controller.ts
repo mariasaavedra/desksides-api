@@ -12,6 +12,12 @@ export class AppController {
     return this.authService.login(req.user);
   }
 
+  // @UseGuards(LocalAuthGuard)
+  // @Post('auth/register')
+  // async register(@Request() req) {
+  //   return this.authService.register(req.user);
+  // }
+
   @Get('/hello')
   async hello() {
     console.log(process.env.JWT_S);

@@ -18,7 +18,7 @@ export class PaymentsService {
   private stripe;
 
   constructor() {
-    this.stripe = new Stripe(process.env.API_SECRET_KEY, {
+    this.stripe = new Stripe(process.env.STRIPE_API_KEY, {
       apiVersion: '2022-08-01',
     });
   }
