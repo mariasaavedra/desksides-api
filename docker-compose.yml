@@ -1,0 +1,36 @@
+# A Docker Compose must always start with the version tag.
+# We use '3' because it's the last version.
+version: "3"
+services:
+  # The name of our service is "database"
+  # but you can use the name of your choice.
+  # Note: This may change the commands you are going to use a little bit.
+  desksides-api:
+    image: desksides-api
+    container_name: desksides-api
+    build: .
+    ports:
+      - 3333:3333
+      - 5555:5555
+    depends_on:
+      - desksides-db
+
+    # Create mappings between project directory + docker work directory
+    # this allows us to enable live reloading.
+    volumes:
+      - ./:/app
+  desksides-db:
+    # Official Postgres image from DockerHub (we use the same version as Azure)
+    image: "postgres:13.6"
+    container_name: desksides-db
+    ports:
+      - 5432:5432
+
+    environment:
+      POSTGRES_USER: username # The PostgreSQL user (useful to connect to the database)
+      POSTGRES_PASSWORD: password # The PostgreSQL password (useful to connect to the database)
+      POSTGRES_DB: desksidesdb # The PostgreSQL default database (automatically created at first launch)
+    volumes:
+      - data:/var/lib/postgresql/data/
+volumes:
+  data:
