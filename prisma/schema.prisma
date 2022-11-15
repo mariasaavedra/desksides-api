@@ -23,8 +23,8 @@ model User {
   last_name          String
   email              String    @unique
   password           String
-  token              String
-  stripe_customer_id String    @unique
+  token              String?
+  stripe_customer_id String?
   created_at         DateTime  @default(now()) @db.Timestamptz(5)
   updated_at         DateTime  @default(now()) @db.Timestamptz(5)
   is_verified        DateTime?
@@ -62,7 +62,7 @@ model Match {
 
 model Industry {
   id         Int      @id @default(autoincrement())
-  label      String
+  label      String   @unique
   created_at DateTime @default(now()) @db.Timestamptz(5)
   updated_at DateTime @default(now()) @db.Timestamptz(5)
   Profile    Profile? @relation(fields: [profileId], references: [id])
@@ -71,7 +71,7 @@ model Industry {
 
 model Publication {
   id         Int      @id @default(autoincrement())
-  label      String
+  label      String   @unique
   created_at DateTime @default(now()) @db.Timestamptz(5)
   updated_at DateTime @default(now()) @db.Timestamptz(5)
   Profile    Profile? @relation(fields: [profileId], references: [id])
