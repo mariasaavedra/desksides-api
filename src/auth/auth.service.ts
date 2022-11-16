@@ -47,7 +47,7 @@ export class AuthService {
   }
 
   async generatePasswordToken(): Promise<string> {
-    let token;
+    let token: string;
     await crypto.generateKey('hmac', { length: 64 }, (err, key) => {
       token = key.export().toString('hex');
     });

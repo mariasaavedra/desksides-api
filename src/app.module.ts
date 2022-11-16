@@ -6,9 +6,11 @@ import { UsersModule } from './users/users.module';
 import { PrismaService } from './prisma/prisma.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { MatchesModule } from './matches/matches.module';
+import { FilesModule } from './files/files.module';
+import { FileModule } from './file/file.module';
 
 @Module({
-  imports: [AuthModule, UsersModule, PrismaModule, MatchesModule],
+  imports: [AuthModule, UsersModule, PrismaModule, MatchesModule, FilesModule, FileModule],
   controllers: [AppController],
   providers: [AppService, PrismaService],
 })
