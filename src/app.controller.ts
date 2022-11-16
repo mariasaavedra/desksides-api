@@ -24,6 +24,12 @@ export class AppController {
     return this.authService.logout();
   }
 
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/reset-password')
+  async resetPassword(@Request() req) {
+    return this.authService.resetPassword(req);
+  }
+
   @Get('/hello')
   async hello() {
     console.log(process.env.JWT_SECRET);
