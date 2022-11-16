@@ -20,13 +20,13 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/logout')
-  async logout(@Request() req) {
+  async logout() {
     return this.authService.logout();
   }
 
   @Get('/hello')
   async hello() {
-    console.log(process.env.JWT_S);
+    console.log(process.env.JWT_SECRET);
     return 'hello';
   }
 }

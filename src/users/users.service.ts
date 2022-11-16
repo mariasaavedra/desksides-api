@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
-// This should be a real class/interface representing a user entity
+export type UpdateUserDto = Partial<User>;
 
 @Injectable()
 export class UsersService {
@@ -18,7 +18,7 @@ export class UsersService {
     return users;
   }
 
-  async update(id: number, updateUserDTO: User): Promise<User> {
+  async update(id: number, updateUserDTO: UpdateUserDto): Promise<User> {
     const users = await this.prisma.user.update({
       where: { id },
       data: { ...updateUserDTO },
