@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
+import { Match } from '@prisma/client';
+
+/*
+ * Prisma Client is an auto-generated and type-safe query builder
+ * that's generated from our prisma.schema
+ */
+export type CreateMatchDto = Omit<Match, 'id'>;
+export type UpdateMatchDto = Partial<Match>;
 
 @Injectable()
 export class MatchesService {

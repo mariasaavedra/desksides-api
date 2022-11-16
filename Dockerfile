@@ -7,6 +7,6 @@ WORKDIR /app
 COPY . .
 
 CMD yarn \
-    && yarn db:migrate-prod \
+    && yarn db:migrate \
     && yarn db:seed \
     && yarn start:all

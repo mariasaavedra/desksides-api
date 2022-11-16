@@ -8,10 +8,10 @@ import {
   Delete,
 } from '@nestjs/common';
 import { MatchesService } from './matches.service';
-import { User } from '@prisma/client';
+import { Match } from '@prisma/client';
 
-export type CreateMatchDto = Omit<User, 'id'>;
-export type UpdateMatchDto = Partial<User>;
+export type CreateMatchDto = Omit<Match, 'id'>;
+export type UpdateMatchDto = Partial<Match>;
 
 @Controller('matches')
 export class MatchesController {
