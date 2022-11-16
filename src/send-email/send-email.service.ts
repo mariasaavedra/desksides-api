@@ -27,38 +27,38 @@ export class SendEmailService {
 
   async sendConfirmation(config: SGTemplateEmailConfig) {
     const templateId = 'XXX-000-XXX-000';
-    return this.sendSGTemplateEmail({ ...config });
+    return this.sendSGTemplateEmail({ ...config, templateId });
   }
 
   async sendJournalistApproved(config: SGTemplateEmailConfig) {
     const templateId = 'XXX-000-XXX-000';
-    return this.sendSGTemplateEmail({ ...config });
+    return this.sendSGTemplateEmail({ ...config, templateId });
   }
 
   async sendJournalistRejected(config: SGTemplateEmailConfig) {
     const templateId = 'XXX-000-XXX-000';
-    return this.sendSGTemplateEmail({ ...config });
+    return this.sendSGTemplateEmail({ ...config, templateId });
   }
 
   async sendBrandApproved(config: SGTemplateEmailConfig) {
     const templateId = 'XXX-000-XXX-000';
-    return await this.sendSGTemplateEmail({ ...config });
+    return await this.sendSGTemplateEmail({ ...config, templateId });
   }
 
   async sendBrandRejected(config: SGTemplateEmailConfig) {
     const templateId = 'XXX-000-XXX-000';
-    return this.sendSGTemplateEmail({ ...config });
+    return this.sendSGTemplateEmail({ ...config, templateId });
   }
 
   async sendPasswordReset(config: SGTemplateEmailConfig) {
     const templateId = 'XXX-000-XXX-000';
-    return this.sendSGTemplateEmail({ ...config });
+    return this.sendSGTemplateEmail({ ...config, templateId });
   }
 
   async sendTestEmail() {
     const msg = {
       to: 'maria@advadigitalsolutions.com',
-      from: 'molly@superbshifts.com',
+      from: 'info@desksides.com',
       subject: 'Testing SendGrid Integration',
       text: 'Hello plain world!',
       html: '<p>Hello HTML world!</p>',

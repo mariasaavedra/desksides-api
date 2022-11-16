@@ -40,6 +40,20 @@ export class AuthService {
     };
   }
 
+  async resetPassword(email: string) {
+    try {
+      const user = await this.usersService.findOne(email);
+      const payload = { email: user.email, sub: user.id };
+      const token = this.jwtService.sign(payload, {
+        secret: process.env.JWT_TOKEN,
+        expiresIn: '1h',
+      });
+      return { ...user, token: token };
+    } catch (error) {
+      return { error: `Invalid email` };
+    }
+  }
+
   async register(userDTO: User) {
     try {
       const user = await this.prisma.user.create({
