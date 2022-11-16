@@ -12,14 +12,39 @@ export class SendEmailController {
   sendSGTemplateEmail() {
     const config: SGTemplateEmailConfig = {
       from: 'info@desksides.com',
-      to: 'msaav3@gmail.com',
-      templateId: 'd-feac410afddc48ab8b54b6257f131383',
+      to: '',
+      templateId: 'XXX-000-XXX-000',
     };
     return this.sendEmailService.sendSGTemplateEmail(config);
   }
-  @Post('confirmation')
-  sendFacilityNewMessage(@Body() config: SGTemplateEmailConfig) {
-    const templateId = 'd-9b5a41314f2b405f95c49d5f7761a60';
+  @Post('verify-email')
+  sendConfirmation(@Body() config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+  }
+  @Post('journalist-approved')
+  sendJournalistApproved(@Body() config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+  }
+  @Post('journalist-rejected')
+  sendJournalistRejected(@Body() config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+  }
+  @Post('brand-approved')
+  sendBrandApproved(@Body() config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+  }
+  @Post('brand-rejected')
+  sendBrandRejected(@Body() config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+  }
+  @Post('reset-password')
+  sendPasswordReset(@Body() config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
     return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
   }
 }
