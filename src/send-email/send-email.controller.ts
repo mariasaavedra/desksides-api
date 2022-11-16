@@ -19,32 +19,26 @@ export class SendEmailController {
   }
   @Post('verify-email')
   sendConfirmation(@Body() config: SGTemplateEmailConfig) {
-    const templateId = 'XXX-000-XXX-000';
-    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+    return this.sendEmailService.sendConfirmation(config);
   }
   @Post('journalist-approved')
   sendJournalistApproved(@Body() config: SGTemplateEmailConfig) {
-    const templateId = 'XXX-000-XXX-000';
-    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+    return this.sendEmailService.sendJournalistApproved(config);
   }
   @Post('journalist-rejected')
   sendJournalistRejected(@Body() config: SGTemplateEmailConfig) {
-    const templateId = 'XXX-000-XXX-000';
-    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+    return this.sendEmailService.sendJournalistRejected(config);
   }
   @Post('brand-approved')
   sendBrandApproved(@Body() config: SGTemplateEmailConfig) {
-    const templateId = 'XXX-000-XXX-000';
-    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+    return this.sendEmailService.sendBrandApproved(config);
   }
   @Post('brand-rejected')
   sendBrandRejected(@Body() config: SGTemplateEmailConfig) {
-    const templateId = 'XXX-000-XXX-000';
-    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+    return this.sendEmailService.sendBrandRejected(config);
   }
   @Post('reset-password')
   sendPasswordReset(@Body() config: SGTemplateEmailConfig) {
-    const templateId = 'XXX-000-XXX-000';
-    return this.sendEmailService.sendSGTemplateEmail({ ...config, templateId });
+    return this.sendEmailService.sendPasswordReset(config);
   }
 }

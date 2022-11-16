@@ -24,6 +24,37 @@ export class SendEmailService {
       console.error(e);
     }
   }
+
+  async sendConfirmation(config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendSGTemplateEmail({ ...config });
+  }
+
+  async sendJournalistApproved(config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendSGTemplateEmail({ ...config });
+  }
+
+  async sendJournalistRejected(config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendSGTemplateEmail({ ...config });
+  }
+
+  async sendBrandApproved(config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return await this.sendSGTemplateEmail({ ...config });
+  }
+
+  async sendBrandRejected(config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendSGTemplateEmail({ ...config });
+  }
+
+  async sendPasswordReset(config: SGTemplateEmailConfig) {
+    const templateId = 'XXX-000-XXX-000';
+    return this.sendSGTemplateEmail({ ...config });
+  }
+
   async sendTestEmail() {
     const msg = {
       to: 'maria@advadigitalsolutions.com',
