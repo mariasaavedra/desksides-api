@@ -1,28 +1,33 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Injectable, Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 // This should be a real class/interface representing a user entity
-export type User = any;
 
 @Injectable()
 export class UsersService {
+  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
+
   async findOne(email: string): Promise<User | undefined> {
-    const prisma = new PrismaClient();
-    return await prisma.user.findUnique({ where: { email } });
+    return await this.prisma.user.findUnique({ where: { email } });
   }
-  // create(createUserssDto: CreateUserssDto) {
-  //   return 'This action adds a new userss';
-  // }
 
-  // findAll() {
-  //   return `This action returns all userss`;
-  // }
+  async findAll(): Promise<Array<User>> {
+    const users = await this.prisma.user.findMany();
+    return users;
+  }
 
-  // update(id: number, updateUserssDto: UpdateUserssDto) {
-  //   return `This action updates a #${id} userss`;
-  // }
+  async update(id: number, updateUserDTO: User): Promise<User> {
+    const users = await this.prisma.user.update({
+      where: { id },
+      data: { ...updateUserDTO },
+    });
+    return users;
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} userss`;
-  // }
+  async remove(id: number): Promise<User> {
+    const user = await this.prisma.user.delete({ where: { id } });
+    return user;
+  }
 }

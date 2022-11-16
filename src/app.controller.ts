@@ -12,11 +12,17 @@ export class AppController {
     return this.authService.login(req.user);
   }
 
-  // @UseGuards(LocalAuthGuard)
-  // @Post('auth/register')
-  // async register(@Request() req) {
-  //   return this.authService.register(req.user);
-  // }
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/register')
+  async register(@Request() req) {
+    return this.authService.register(req.user);
+  }
+
+  @UseGuards(LocalAuthGuard)
+  @Post('auth/logout')
+  async logout(@Request() req) {
+    return this.authService.logout();
+  }
 
   @Get('/hello')
   async hello() {
