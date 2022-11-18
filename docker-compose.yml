@@ -5,9 +5,9 @@ services:
   # The name of our service is "database"
   # but you can use the name of your choice.
   # Note: This may change the commands you are going to use a little bit.
-  desksides-api:
-    image: desksides-api
-    container_name: desksides-api
+  desksides_api:
+    image: desksides_api
+    container_name: desksides_api
     build: .
     ports:
       - 3333:3333

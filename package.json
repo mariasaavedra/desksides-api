@@ -10,7 +10,7 @@
     "start:all": "yarn start:dev & prisma studio",
     "db:seed": "prisma db seed",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev --force",
+    "db:migrate": "prisma migrate dev",
     "db:migrate-prod": "prisma migrate deploy",
     "db:migrate-reset": "prisma migrate reset",
     "prebuild": "rimraf dist",

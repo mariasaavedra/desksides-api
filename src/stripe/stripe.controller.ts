@@ -31,28 +31,29 @@ export class StripeController {
 
   @Post('/webhook')
   async webhook(@Req() req: Request) {
-    const signature = req.headers['stripe-signature'];
+    console.log('WEBHOOK WAS TOUCHED', req);
+    const endpointSecret =
+      'whsec_a7985fd09f89ec980ac4d18eed64fdca1faba9ed6a596f9e1b619de1ca68986c';
+    const sig = req.headers['stripe-signature'];
 
-    if (!process.env.STRIPE_WEBHOOK_SECRET) {
-      const { data, eventType } = req.body.data;
-      if (eventType === 'checkout.session.completed') {
-        Logger.log('Payment received');
-      }
+    let event;
 
-      Logger.log(data, eventType);
-      return HttpStatus.NO_CONTENT;
-    } else {
-      // Retrieve the event by verifying the signature using the raw body and secret.
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
+    } catch (err) {
+      console.log(`Webhook Error: ${err.message}`);
+      return;
+    }
 
-      const event = stripe.webhooks.constructEvent(
-        req.body,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET,
-      );
-      // Extract the object from the event.
-      const { data, type } = event;
-      Logger.log(data, type);
-      return HttpStatus.NO_CONTENT;
+    // Handle the event
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        const paymentIntent = event.data.object;
+        // Then define and call a function to handle the event payment_intent.succeeded
+        break;
+      // ... handle other event types
+      default:
+        console.log(`Unhandled event type ${event.type}`);
     }
   }
   @Post('checkout-session')
