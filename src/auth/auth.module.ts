@@ -7,6 +7,7 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { SendEmailService } from '../send-email/send-email.service';
+import { JwtStrategy } from './jwt.strategy';
 
 @Module({
   imports: [
@@ -14,11 +15,11 @@ import { SendEmailService } from '../send-email/send-email.service';
     PassportModule,
     PrismaModule,
     JwtModule.register({
-      secret: jwtConstants.secret,
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '1000s' },
     }),
   ],
-  providers: [AuthService, LocalStrategy, SendEmailService],
+  providers: [AuthService, LocalStrategy, SendEmailService, JwtStrategy],
   exports: [AuthService],
 })
 export class AuthModule {}
