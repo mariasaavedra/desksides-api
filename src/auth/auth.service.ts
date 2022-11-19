@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcryptjs from 'bcryptjs';
@@ -9,6 +9,7 @@ import {
   SendEmailService,
   SGTemplateEmailConfig,
 } from '../send-email/send-email.service';
+import { STATUS_CODES } from 'node:http';
 
 @Injectable()
 export class AuthService {
@@ -33,11 +34,26 @@ export class AuthService {
     return null;
   }
 
-  async login(user: User) {
-    const payload = { email: user.email, sub: user.id };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+  async login(user) {
+    if (user) {
+      try {
+        const validUser = await this.validateUser(user.email, user.password);
+        if (!validUser) {
+          Logger.error(`Could not login`);
+          return HttpStatus.FORBIDDEN;
+        }
+        const payload = { email: validUser.email, sub: validUser.id };
+        return {
+          access_token: this.jwtService.sign(payload),
+        };
+      } catch (e) {
+        Logger.error(`Could not login: ${e}`);
+      }
+      return user;
+    }
+
+    Logger.error(`Could not login`);
+    return;
   }
 
   async logout() {
