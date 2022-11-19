@@ -19,7 +19,10 @@ import {
 } from '../send-email/send-email.service';
 import { StripeService } from './stripe.service';
 
-const stripe = new Stripe('', { apiVersion: '2022-08-01' });
+const stripe = new Stripe(
+  'sk_test_51LwVlYGbjwd92QzUL2KUWuXBNxWkTFXnrQgluVr4CrfPiXasdUBwLuq2kwSVdnQlqfp6r7eYp9IUd5wSrW5SvOXH00ivjNORRN',
+  { apiVersion: '2022-08-01' },
+);
 @Controller('stripe')
 export class StripeController {
   constructor(
@@ -56,6 +59,21 @@ export class StripeController {
         console.log(`Unhandled event type ${event.type}`);
     }
   }
+
+  @Post('create-payment-intent')
+  async createPaymentIntent(@Req() req) {
+    const { items } = req.body;
+
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: 100,
+      currency: 'usd',
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
+    return { clientSecret: paymentIntent.client_secret };
+  }
   @Post('checkout-session')
   async checkoutSession(@Req() req) {
     const { sessionId } = req.query;
@@ -65,16 +83,23 @@ export class StripeController {
   @Post('create-checkout-session')
   async createCheckoutSession(@Req() req) {
     const domainURL = process.env.DOMAIN;
-    // {CHECKOUT_SESSION_ID}  will have the session ID set as a query param
-    const success_url = `${domainURL}/success.html?session_id={CHECKOUT_SESSION_ID}`;
-    const cancel_url = `${domainURL}/canceled.html`;
-    const { priceId } = req.body;
+    const prices = await stripe.prices.list({
+      lookup_keys: [req.body.lookup_key],
+      expand: ['data.product'],
+    });
     try {
       const session = await stripe.checkout.sessions.create({
+        billing_address_collection: 'auto',
+        line_items: [
+          {
+            price: prices.data[0].id,
+
+            quantity: 1,
+          },
+        ],
         mode: 'subscription',
-        line_items: [{ price: priceId, quantity: 1 }],
-        success_url,
-        cancel_url,
+        success_url: `${domainURL}/?success=true&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${domainURL}?canceled=true`,
       });
       return session.url;
     } catch (e) {
