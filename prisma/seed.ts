@@ -23,6 +23,80 @@ async function main() {
   });
   console.log('seed user...', maria);
 
+  const seedBrands = async () => {
+    for (let i = 0; i < 10; i++) {
+      try {
+        const user = await prisma.user.create({
+          data: {
+            first_name: faker.name.firstName(),
+            last_name: faker.name.lastName(),
+            email: `brand-${i}@example.com`,
+            password: password,
+            is_verified: new Date(),
+            is_approved: new Date(),
+            role: 'BRAND',
+            token: '',
+            stripe_customer_id: '',
+            updated_at: new Date(),
+            Profile: {
+              create: {
+                affliate_url: 'http://www.example.com',
+                preferred_datetime: new Date(),
+                preferred_medium: 'Digital',
+                preferred_time: 'Noon',
+                quarterly_goal: 10,
+                stories_per_month: 3,
+                years_of_exp: 5,
+              },
+            },
+          },
+          include: {
+            Profile: true, // Include all posts in the returned object
+          },
+        });
+      } catch (e) {
+        console.log('Failed to seed brand', e);
+      }
+    }
+  };
+
+  const seedJournalists = async () => {
+    for (let i = 0; i < 10; i++) {
+      try {
+        const user = await prisma.user.create({
+          data: {
+            first_name: faker.name.firstName(),
+            last_name: faker.name.lastName(),
+            email: `journalist-${i}@example.com`,
+            password: password,
+            is_verified: new Date(),
+            is_approved: new Date(),
+            role: 'JOURNALIST',
+            token: '',
+            stripe_customer_id: '',
+            updated_at: new Date(),
+            Profile: {
+              create: {
+                affliate_url: 'http://www.example.com',
+                preferred_datetime: new Date(),
+                preferred_medium: 'Digital',
+                preferred_time: 'Noon',
+                quarterly_goal: 10,
+                stories_per_month: 3,
+                years_of_exp: 5,
+              },
+            },
+          },
+          include: {
+            Profile: true, // Include all posts in the returned object
+          },
+        });
+      } catch (e) {
+        console.log('Failed to seed brand', e);
+      }
+    }
+  };
+
   const seedAdmins = async () => {
     const users: Array<any> = [];
     for (let i = 0; i < 10; i++) {
@@ -37,49 +111,17 @@ async function main() {
         token: '',
         stripe_customer_id: '',
         updated_at: new Date(),
-        profile: {
-          affliate_url: 'http://www.example.com',
-          preferred_datetime: new Date(),
-          preferred_medium: 'Digital',
-          preferred_time: '1PM',
-          quarterly_goal: 3,
-          stories_per_month: 1,
-          years_of_exp: 10,
-        },
       });
 
-      users.forEach(async (user) => {
-        const { profile, ...details } = user;
-        try {
-          const existingRecord = await prisma.user.findUnique({
-            where: { email: user.email },
-          });
-          if (existingRecord) {
-            return;
-          }
-          const userWithProfile = await prisma.user.create({
-            data: {
-              ...details,
-              Profile: {
-                create: { ...user.profile },
-              },
-            },
-            include: {
-              Profile: true,
-            },
-          });
-        } catch (e) {
-          console.log('Failed to create user', e);
-        }
-      });
+      try {
+        await prisma.user.createMany({ data: users, skipDuplicates: true });
+      } catch (e) {
+        console.log('Failed to create users', e);
+      }
     }
-    // try {
-    //   await prisma.user.createMany({ data: users, skipDuplicates: true });
-    // } catch (e) {
-    //   console.log(`Error: ${e}`);
-    // }
   };
   await seedAdmins();
+  await seedBrands();
 }
 main()
   .then(async () => {
