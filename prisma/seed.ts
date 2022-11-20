@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import * as bcryptjs from 'bcryptjs';
 import { PrismaClient, User } from '@prisma/client';
 import { industries, publications } from './constant';
-import { match } from 'node:assert';
+
 const prisma = new PrismaClient();
 async function main() {
   const password = await bcryptjs.hash('password', 10);

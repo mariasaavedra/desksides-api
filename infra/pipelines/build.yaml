@@ -1,0 +1,11 @@
+steps:
+  - task: UseNode@1
+    displayName: 'Use Node 16.14.2'
+    inputs:
+      version: '16.14.2'
+
+  - script: 'cd "$(System.DefaultWorkingDirectory)" && yarn'
+    displayName: 'Yarn install'
+
+  - script: 'yarn build'
+    displayName: 'Yarn Build'

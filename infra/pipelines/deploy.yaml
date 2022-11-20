@@ -1,0 +1,63 @@
+steps:
+  - task: CopyFiles@2
+    displayName: 'Copy files to dist'
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)'
+      Contents: 'package.json'
+      TargetFolder: '$(System.DefaultWorkingDirectory)/dist'
+
+  - task: CopyFiles@2
+    displayName: 'Copy files to dist'
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)'
+      Contents: 'yarn.lock'
+      TargetFolder: '$(System.DefaultWorkingDirectory)/dist'
+
+  - task: CopyFiles@2
+    displayName: 'Copy prisma folder to dist'
+    inputs:
+      SourceFolder: '$(System.DefaultWorkingDirectory)/prisma'
+      Contents: '**'
+      TargetFolder: '$(System.DefaultWorkingDirectory)/dist/prisma'
+
+  - task: AzureKeyVault@2
+    inputs:
+      azureSubscription: '$(azureServiceConnection)'
+      KeyVaultName: '$(keyVaultName)'
+      SecretsFilter: 'database-url'
+      RunAsPreJob: false
+
+  - script: 'yarn db:migrate-prod'
+    displayName: Run DB migrations
+    env:
+      #  Retrieved from key vault in task above
+      DATABASE_URL: '$(database-url)'
+
+  - script: 'yarn db:seed'
+    displayName: Run DB seed in dev and QA
+    condition: or(eq(variables.azureServiceConnection, 'qa'), eq(variables.azureServiceConnection, 'dev'))
+    env:
+      #  Retrieved from key vault in task above
+      DATABASE_URL: '$(database-url)'
+
+
+  - task: AzureRmWebAppDeployment@4
+    displayName: 'Deploy app'
+    inputs:
+      ConnectionType: 'AzureRM'
+      azureSubscription: '$(azureServiceConnection)'
+      appType: 'webAppLinux'
+      WebAppName: '$(webAppName)'
+      packageForLinux: '$(System.DefaultWorkingDirectory)/dist'
+      runtimeStack: 'NODE|16-lts'
+      StartupCommand: 'yarn install --production=true --network-timeout 3600000 && yarn db:generate && node src/main'
+      AppSettings: '-AZURE_CONNECTION_STRING @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=azure-connection-string)
+      -DATABASE_URL @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=database-url)
+      -ENCRYPT_KEY @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=encrypt-key)
+      -JWT_SECRET @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=jwt-secret)
+      -SENDGRID_API_KEY @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=sendgrid-api-key)
+      -TWILIO_ACCOUNT_SID @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=twilio-account-sid)
+      -TWILIO_AUTH_TOKEN @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=twilio-auth-token)
+      -WEBSITES_CONTAINER_START_TIME_LIMIT 1800
+      -APPLICATIONINSIGHTS_CONNECTION_STRING @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=applicationinsights-connection-string)
+      -ApplicationInsightsAgent_EXTENSION_VERSION ~3'

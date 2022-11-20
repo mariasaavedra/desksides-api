@@ -1,0 +1,282 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "log_analytics_workspace": {
+            "type": "object"
+        },
+        "application_insights": {
+            "type": "object"
+        },
+        "web_app": {
+            "type": "object"
+        },
+        "database": {
+            "type": "object"
+        },
+        "key_vault": {
+            "type": "object"
+        },
+        "storage_account": {
+            "type": "object"
+        }
+    },
+    "variables": {
+        "database_admin_password": "[uniqueString(resourceGroup().id)]"
+    },
+    "resources": [
+        {
+            "type": "microsoft.operationalinsights/workspaces",
+            "apiVersion": "2021-06-01",
+            "name": "[parameters('log_analytics_workspace').name]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sku": {
+                    "name": "pergb2018"
+                },
+                "retentionInDays": 30,
+                "features": {
+                    "enableLogAccessUsingOnlyResourcePermissions": true
+                },
+                "workspaceCapping": {
+                    "dailyQuotaGb": -1
+                },
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+            }
+        },
+        {
+            "type": "microsoft.insights/components",
+            "apiVersion": "2020-02-02",
+            "name": "[parameters('application_insights').name]",
+            "location": "[resourceGroup().location]",
+            "kind": "web",
+            "properties": {
+                "Application_Type": "web",
+                "Flow_Type": "Redfield",
+                "Request_Source": "IbizaAIExtensionEnablementBlade",
+                "RetentionInDays": 90,
+                "WorkspaceResourceId": "[resourceId('microsoft.operationalinsights/workspaces', parameters('log_analytics_workspace').name)]",
+                "IngestionMode": "LogAnalytics",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('web_app').hostingPlanName]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[resourceGroup().location]",
+            "kind": "linux",
+            "tags": null,
+            "properties": {
+                "name": "[parameters('web_app').hostingPlanName]",
+                "workerSize": "0",
+                "workerSizeId": "0",
+                "numberOfWorkers": "1",
+                "reserved": true,
+                "zoneRedundant": false
+            },
+            "sku": {
+                "Tier": "[parameters('web_app').sku]",
+                "Name": "[parameters('web_app').skuCode]"
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('web_app').api_name]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms/', parameters('web_app').hostingPlanName)]"
+            ],
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "tags": null,
+            "kind": "app,linux",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "name": "[parameters('web_app').api_name]",
+                "siteConfig": {
+                    "alwaysOn": "[parameters('web_app').alwaysOn]",
+                    "acrUseManagedIdentityCreds": true
+                },
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('web_app').hostingPlanName)]",
+                "clientAffinityEnabled": false,
+                "httpsOnly": true
+            }
+        },
+        {
+            "apiVersion": "2018-11-01",
+            "name": "[parameters('web_app').ui_name]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms/', parameters('web_app').hostingPlanName)]"
+            ],
+            "type": "Microsoft.Web/sites",
+            "location": "[resourceGroup().location]",
+            "tags": null,
+            "kind": "app,linux",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "name": "[parameters('web_app').ui_name]",
+                "siteConfig": {
+                    "alwaysOn": "[parameters('web_app').alwaysOn]",
+                    "acrUseManagedIdentityCreds": true
+                },
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('web_app').hostingPlanName)]",
+                "clientAffinityEnabled": false,
+                "httpsOnly": true
+            }
+        },
+        {
+            "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+            "apiVersion": "2021-06-01",
+            "name": "[parameters('database').serverName]",
+            "location": "[resourceGroup().location]",
+            "tags": null,
+            "sku": {
+                "name": "[parameters('database').vmName]",
+                "tier": "[parameters('database').serverEdition]"
+            },
+            "properties": {
+                "version": "13",
+                "createMode": "Default",
+                "administratorLogin": "[parameters('database').administratorLogin]",
+                "administratorLoginPassword": "[variables('database_admin_password')]",
+                "availabilityZone": "",
+                "storage": {
+                    "storageSizeGB": "[parameters('database').storageSizeGB]"
+                },
+                "backup": {
+                    "backupRetentionDays": "[parameters('database').backupRetentionDays]",
+                    "geoRedundantBackup": "[parameters('database').geoRedundantBackup]"
+                },
+                "highAvailability": {
+                    "mode": "Disabled",
+                    "standbyAvailabilityZone": ""
+                }
+            }
+        },
+        {
+            "type": "Microsoft.DBforPostgreSQL/flexibleServers/firewallRules",
+            "name": "[concat(parameters('database').serverName, '/firewallRules')]",
+            "apiVersion": "2021-06-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('database').serverName)]"
+            ],
+            "properties": {
+                "StartIpAddress": "0.0.0.0",
+                "EndIpAddress": "0.0.0.0"
+            }
+        },
+        {
+            "apiVersion": "2019-09-01",
+            "name": "[parameters('key_vault').name]",
+            "location": "[resourceGroup().location]",
+            "type": "Microsoft.KeyVault/vaults",
+            "properties": {
+                "enabledForDeployment": false,
+                "enabledForTemplateDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enableRbacAuthorization": true,
+                "tenantId": "[tenant().tenantId]",
+                "sku": {
+                    "name": "[parameters('key_vault').sku]",
+                    "family": "A"
+                },
+                "enableSoftDelete": true,
+                "softDeleteRetentionInDays": "[parameters('key_vault').softDeleteRetentionInDays]",
+                "enablePurgeProtection": true,
+                "networkAcls": "[parameters('key_vault').networkAcls]"
+            },
+            "tags": {}
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('key_vault').name, '/database-admin-password')]",
+            "properties": {
+                "value": "[variables('database_admin_password')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('key_vault').name)]"
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2021-11-01-preview",
+            "name": "[concat(parameters('key_vault').name, '/applicationinsights-connection-string')]",
+            "properties": {
+                "value": "[reference(resourceId('microsoft.insights/components', parameters('application_insights').name), '2020-02-02').ConnectionString]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('key_vault').name)]",
+                "[resourceId('microsoft.insights/components', parameters('application_insights').name)]"
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-09-01",
+            "name": "[parameters('storage_account').name]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('storage_account').sku]",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "dnsEndpointType": "Standard",
+                "defaultToOAuthAuthentication": false,
+                "publicNetworkAccess": "Enabled",
+                "allowCrossTenantReplication": true,
+                "minimumTlsVersion": "TLS1_2",
+                "allowBlobPublicAccess": false,
+                "allowSharedKeyAccess": true,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "requireInfrastructureEncryption": false,
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "location": "[resourceGroup().location]",
+            "name": "[guid(subscription().subscriptionId, parameters('web_app').api_name)]",
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('web_app').api_name), '2018-11-01', 'Full').identity.principalId]"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "location": "[resourceGroup().location]",
+            "name": "[guid(subscription().subscriptionId, parameters('web_app').ui_name)]",
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('web_app').ui_name), '2018-11-01', 'Full').identity.principalId]"
+            }
+        }
+    ]
+}

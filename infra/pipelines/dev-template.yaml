@@ -1,0 +1,14 @@
+trigger:
+  - dev
+
+pool:
+  vmImage: 'ubuntu-22.04'
+
+variables:
+  azureServiceConnection: 'dev'
+  webAppName: 'SuperbApiDev'
+  keyVaultName: 'SuperbKeyVaultDevRed'
+
+steps:
+  - template: ./build.yaml
+  - template: ./deploy.yaml

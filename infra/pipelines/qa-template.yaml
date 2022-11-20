@@ -1,0 +1,14 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-22.04'
+
+variables:
+  azureServiceConnection: 'qa'
+  webAppName: 'SuperbApiQa'
+  keyVaultName: 'SuperbKeyVaultQaRed'
+
+steps:
+  - template: ./build.yaml
+  - template: ./deploy.yaml

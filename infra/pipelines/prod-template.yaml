@@ -1,0 +1,16 @@
+trigger:
+  branches:
+    exclude:
+      - '*'
+
+pool:
+  vmImage: 'ubuntu-22.04'
+
+variables:
+  azureServiceConnection: 'prod'
+  webAppName: 'SuperbApi'
+  keyVaultName: 'SuperbKeyVaultBlue'
+
+steps:
+  - template: ./build.yaml
+  - template: ./deploy.yaml

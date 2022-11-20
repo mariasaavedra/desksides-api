@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "log_analytics_workspace": {
+            "value": {
+                "name": "SuperbLogAnalyticsWorkspace"
+            }
+        },
+        "application_insights": {
+            "value": {
+                "name": "SuperbAppInsights"
+            }
+        },
+        "web_app": {
+            "value": {
+                "api_name": "SuperbApi",
+                "ui_name": "SuperbUi",
+                "hostingPlanName": "SuperbAppServicePlan",
+                "alwaysOn": true,
+                "sku": "Basic",
+                "skuCode": "B1"
+            }
+        },
+        "database": {
+            "value": {
+                "serverName": "superb",
+                "vmName": "Standard_B1ms",
+                "serverEdition": "Burstable",
+                "administratorLogin": "Superb",
+                "storageSizeGB": 32,
+                "backupRetentionDays": 7,
+                "geoRedundantBackup": false
+            }
+        },
+        "key_vault": {
+            "value": {
+                "name": "SuperbKeyVaultBlue",
+                "sku": "Standard",
+                "softDeleteRetentionInDays": 90,
+                "networkAcls": {
+                    "defaultAction": "allow",
+                    "bypass": "AzureServices",
+                    "ipRules": [],
+                    "virtualNetworkRules": []
+                }
+            }
+        },
+        "storage_account": {
+            "value": {
+                "name": "superbstorageprod",
+                "sku": "Standard_GRS" // Standard_GRS For geo redundant, or Standard_RAGRS for read access geo redundant
+            }
+        }
+    }
+}
