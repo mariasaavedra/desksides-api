@@ -19,13 +19,14 @@ export class UsersService {
       where: { id: userId },
       include: {
         Profile: true,
+        Match: true,
       },
     });
   }
 
   async findAll(): Promise<Array<User>> {
     const users = await this.prisma.user.findMany({
-      include: { Profile: true },
+      include: { Profile: true, Match: true },
     });
     return users;
   }
@@ -35,6 +36,7 @@ export class UsersService {
       where: { id },
       include: {
         Profile: true,
+        Match: true,
       },
       data: { ...updateUserDTO },
     });
