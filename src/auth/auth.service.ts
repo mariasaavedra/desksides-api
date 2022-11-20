@@ -44,12 +44,12 @@ export class AuthService {
         }
         const payload = { email: validUser.email, sub: validUser.id };
         return {
+          ...validUser,
           access_token: this.jwtService.sign(payload),
         };
       } catch (e) {
         Logger.error(`Could not login: ${e}`);
       }
-      return user;
     }
 
     Logger.error(`Could not login`);
