@@ -1,17 +1,18 @@
 steps:
   - task: CopyFiles@2
-    displayName: 'Copy files to dist'
+    displayName: "Copy package.json to dist"
     inputs:
-      SourceFolder: '$(System.DefaultWorkingDirectory)'
-      Contents: 'package.json'
-      TargetFolder: '$(System.DefaultWorkingDirectory)/dist'
+      SourceFolder: "$(System.DefaultWorkingDirectory)"
+      Contents: "package.json"
+      TargetFolder: "$(System.DefaultWorkingDirectory)/dist"
 
   - task: CopyFiles@2
-    displayName: 'Copy files to dist'
+    displayName: "Copy yarn.lock to dist"
     inputs:
-      SourceFolder: '$(System.DefaultWorkingDirectory)'
-      Contents: 'yarn.lock'
-      TargetFolder: '$(System.DefaultWorkingDirectory)/dist'
+      SourceFolder: "$(System.DefaultWorkingDirectory)"
+      Contents: "yarn.lock"
+      TargetFolder: "$(System.DefaultWorkingDirectory)/dist"
+
 
   - task: CopyFiles@2
     displayName: 'Copy prisma folder to dist'
@@ -20,6 +21,7 @@ steps:
       Contents: '**'
       TargetFolder: '$(System.DefaultWorkingDirectory)/dist/prisma'
 
+
   - task: AzureKeyVault@2
     inputs:
       azureSubscription: '$(azureServiceConnection)'
@@ -27,10 +29,16 @@ steps:
       SecretsFilter: 'database-url'
       RunAsPreJob: false
 
-  - script: 'yarn db:migrate-prod'
+  - script: 'yarn db:generate'
+    displayName: Run DB generation
+    env:
+      # Read from key vault in task above
+      DATABASE_URL: '$(database-url)'
+
+  - script: 'yarn db:migrate-reset'
     displayName: Run DB migrations
     env:
-      #  Retrieved from key vault in task above
+      # Read from key vault in task above
       DATABASE_URL: '$(database-url)'
 
   - script: 'yarn db:seed'
@@ -40,24 +48,22 @@ steps:
       #  Retrieved from key vault in task above
       DATABASE_URL: '$(database-url)'
 
-
   - task: AzureRmWebAppDeployment@4
-    displayName: 'Deploy app'
+    displayName: "Deploy app"
     inputs:
-      ConnectionType: 'AzureRM'
-      azureSubscription: '$(azureServiceConnection)'
-      appType: 'webAppLinux'
-      WebAppName: '$(webAppName)'
-      packageForLinux: '$(System.DefaultWorkingDirectory)/dist'
-      runtimeStack: 'NODE|16-lts'
-      StartupCommand: 'yarn install --production=true --network-timeout 3600000 && yarn db:generate && node src/main'
-      AppSettings: '-AZURE_CONNECTION_STRING @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=azure-connection-string)
+      ConnectionType: "AzureRM"
+      azureSubscription: "$(azureServiceConnection)"
+      appType: "webAppLinux"
+      WebAppName: "$(webAppName)"
+      packageForLinux: "$(System.DefaultWorkingDirectory)/dist"
+      runtimeStack: "NODE|16-lts"
+      StartupCommand: "yarn install --production=true --network-timeout 3600000 && node src/main"
+      AppSettings: "-WEBSITES_CONTAINER_START_TIME_LIMIT 1800
       -DATABASE_URL @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=database-url)
-      -ENCRYPT_KEY @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=encrypt-key)
-      -JWT_SECRET @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=jwt-secret)
-      -SENDGRID_API_KEY @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=sendgrid-api-key)
-      -TWILIO_ACCOUNT_SID @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=twilio-account-sid)
-      -TWILIO_AUTH_TOKEN @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=twilio-auth-token)
-      -WEBSITES_CONTAINER_START_TIME_LIMIT 1800
+      -SENDGRID_API_KEY @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=sendgrid-api)
       -APPLICATIONINSIGHTS_CONNECTION_STRING @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=applicationinsights-connection-string)
-      -ApplicationInsightsAgent_EXTENSION_VERSION ~3'
+      -JWT_SECRET @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=jwt-secret)
+      -STRIPE_API_KEY @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=stripe-key)
+      -STRIPE_API_SECRET @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=stripe-secret)
+      -ApplicationInsightsAgent_EXTENSION_VERSION ~3
+      -STORAGE_ACCOUNT_CONNECTION_STRING @Microsoft.KeyVault(VaultName=$(keyVaultName);SecretName=storage-account-connection-string)"

@@ -1,15 +1,15 @@
 trigger:
   branches:
     exclude:
-      - '*'
+      - "*"
 
 pool:
-  vmImage: 'ubuntu-22.04'
+  vmImage: "ubuntu-22.04"
 
 steps:
   - task: AzureCLI@2
     inputs:
-      azureSubscription: 'prod'
-      scriptType: 'bash'
-      scriptLocation: 'inlineScript'
-      inlineScript: az deployment group create --name 'deployment_'$(date +"%Y%m%dT%I%M%S") --resource-group SuperbAppProd --template-file $(System.DefaultWorkingDirectory)/infra/arm_templates/arm_template.jsonc --parameters $(System.DefaultWorkingDirectory)/infra/arm_templates/prod_parameters.jsonc
+      azureSubscription: "prod"
+      scriptType: "bash"
+      scriptLocation: "inlineScript"
+      inlineScript: az deployment group create --name 'deployment_'$(date +"%Y%m%dT%I%M%S") --resource-group prod --template-file $(System.DefaultWorkingDirectory)/infra/arm_templates/arm_template.jsonc --parameters $(System.DefaultWorkingDirectory)/infra/arm_templates/prod_parameters.jsonc

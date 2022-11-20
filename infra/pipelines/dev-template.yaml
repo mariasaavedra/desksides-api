@@ -2,12 +2,12 @@ trigger:
   - dev
 
 pool:
-  vmImage: 'ubuntu-22.04'
+  vmImage: "ubuntu-22.04"
 
 variables:
-  azureServiceConnection: 'dev'
-  webAppName: 'SuperbApiDev'
-  keyVaultName: 'SuperbKeyVaultDevRed'
+  azureServiceConnection: "dev"
+  webAppName: "DesksidesApiDev"
+  keyVaultName: "DesksidesKeyVaultDevRed"
 
 steps:
   - template: ./build.yaml

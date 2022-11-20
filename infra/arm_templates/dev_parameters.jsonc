@@ -4,30 +4,30 @@
     "parameters": {
         "log_analytics_workspace": {
             "value": {
-                "name": "SuperbLogAnalyticsWorkspaceDev"
+                "name": "DesksidesLogAnalyticsWorkspaceDev"
             }
         },
         "application_insights": {
             "value": {
-                "name": "SuperbAppInsightsDev"
+                "name": "DesksidesAppInsightsDev"
             }
         },
         "web_app": {
             "value": {
-                "api_name": "SuperbApiDev",
-                "ui_name": "SuperbUiDev",
-                "hostingPlanName": "SuperbAppServicePlanDev",
-                "alwaysOn": true,
+                "api_name": "DesksidesApiDev",
+                "ui_name": "DesksidesUiDev",
+                "hostingPlanName": "DesksidesAppServicePlanDev",
+                "alwaysOn": false,
                 "sku": "Basic",
                 "skuCode": "B1"
             }
         },
         "database": {
             "value": {
-                "serverName": "superbdev",
+                "serverName": "desksidesdev",
                 "vmName": "Standard_B1ms",
                 "serverEdition": "Burstable",
-                "administratorLogin": "Superb",
+                "administratorLogin": "Desksides",
                 "storageSizeGB": 32,
                 "backupRetentionDays": 7,
                 "geoRedundantBackup": false
@@ -35,7 +35,7 @@
         },
         "key_vault": {
             "value": {
-                "name": "SuperbKeyVaultDevRed",
+                "name": "DesksidesKeyVaultDevRed",
                 "sku": "Standard",
                 "softDeleteRetentionInDays": 90,
                 "networkAcls": {
@@ -48,7 +48,7 @@
         },
         "storage_account": {
             "value": {
-                "name": "superbstoragedev",
+                "name": "desksidesstoragedev",
                 "sku": "Standard_LRS" // Standard_GRS For geo redundant, or Standard_RAGRS for read access geo redundant
             }
         }

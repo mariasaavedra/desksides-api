@@ -1,15 +1,13 @@
 trigger:
-  branches:
-    exclude:
-      - '*'
+  - main
 
 pool:
-  vmImage: 'ubuntu-22.04'
+  vmImage: "ubuntu-22.04"
 
 variables:
-  azureServiceConnection: 'prod'
-  webAppName: 'SuperbApi'
-  keyVaultName: 'SuperbKeyVaultBlue'
+  azureServiceConnection: "prod"
+  webAppName: "DesksidesApi"
+  keyVaultName: "DesksidesKeyVaultBlue"
 
 steps:
   - template: ./build.yaml

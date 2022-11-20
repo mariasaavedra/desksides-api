@@ -217,6 +217,26 @@
             ]
         },
         {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "location": "[resourceGroup().location]",
+            "name": "[guid(subscription().subscriptionId, parameters('web_app').api_name)]",
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('web_app').api_name), '2018-11-01', 'Full').identity.principalId]"
+            }
+        },
+        {
+            "type": "Microsoft.Authorization/roleAssignments",
+            "apiVersion": "2022-04-01",
+            "location": "[resourceGroup().location]",
+            "name": "[guid(subscription().subscriptionId, parameters('web_app').ui_name)]",
+            "properties": {
+                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
+                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('web_app').ui_name), '2018-11-01', 'Full').identity.principalId]"
+            }
+        },
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2021-09-01",
             "name": "[parameters('storage_account').name]",
@@ -256,26 +276,6 @@
                     "keySource": "Microsoft.Storage"
                 },
                 "accessTier": "Hot"
-            }
-        },
-        {
-            "type": "Microsoft.Authorization/roleAssignments",
-            "apiVersion": "2022-04-01",
-            "location": "[resourceGroup().location]",
-            "name": "[guid(subscription().subscriptionId, parameters('web_app').api_name)]",
-            "properties": {
-                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
-                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('web_app').api_name), '2018-11-01', 'Full').identity.principalId]"
-            }
-        },
-        {
-            "type": "Microsoft.Authorization/roleAssignments",
-            "apiVersion": "2022-04-01",
-            "location": "[resourceGroup().location]",
-            "name": "[guid(subscription().subscriptionId, parameters('web_app').ui_name)]",
-            "properties": {
-                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4633458b-17de-408a-b874-0445c86b69e6')]",
-                "principalId": "[reference(resourceId('Microsoft.Web/sites', parameters('web_app').ui_name), '2018-11-01', 'Full').identity.principalId]"
             }
         }
     ]
