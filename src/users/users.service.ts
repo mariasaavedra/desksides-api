@@ -13,14 +13,29 @@ export class UsersService {
     return await this.prisma.user.findUnique({ where: { email } });
   }
 
+  async findById(id: string): Promise<User | undefined> {
+    const userId = parseInt(id);
+    return await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        Profile: true,
+      },
+    });
+  }
+
   async findAll(): Promise<Array<User>> {
-    const users = await this.prisma.user.findMany();
+    const users = await this.prisma.user.findMany({
+      include: { Profile: true },
+    });
     return users;
   }
 
   async update(id: number, updateUserDTO: UpdateUserDto): Promise<User> {
     const users = await this.prisma.user.update({
       where: { id },
+      include: {
+        Profile: true,
+      },
       data: { ...updateUserDTO },
     });
     return users;

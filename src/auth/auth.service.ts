@@ -9,7 +9,6 @@ import {
   SendEmailService,
   SGTemplateEmailConfig,
 } from '../send-email/send-email.service';
-import { STATUS_CODES } from 'node:http';
 
 @Injectable()
 export class AuthService {

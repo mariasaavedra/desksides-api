@@ -11,12 +11,17 @@ import { User } from '@prisma/client';
 import { UsersService } from './users.service';
 
 @Controller('users')
-export class UserssController {
+export class UsersController {
   constructor(private readonly userService: UsersService) {}
 
   @Get()
   findAll(): Promise<User[]> {
     return this.userService.findAll();
+  }
+
+  @Get(':id')
+  findById(@Param('id') id: string): Promise<User> {
+    return this.userService.findById(id);
   }
 
   @Patch(':id')
