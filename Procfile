@@ -1,1 +1,1 @@
-web: yarn && yarn db:migrate-reset && yarn db:seed && yarn start:prod
+web: yarn && yarn start:prod
