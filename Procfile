@@ -1,1 +1,1 @@
-web: yarn && yarn start:prod
+web: PORT=$PORT yarn && yarn start:prod
